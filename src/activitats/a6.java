@@ -1,5 +1,8 @@
 package activitats;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -9,6 +12,30 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public class a6 {
+
+    private static String dbUrl;
+    private static String dbUser;
+    private static String dbPassword;
+
+    static {
+        try (InputStream input = a6.class.getClassLoader().getResourceAsStream("config.properties")) {
+            Properties prop = new Properties();
+
+            if (input == null) {
+                System.out.println("Lo siento, no se encuentra el archivo de configuración.");
+                System.exit(1);
+            }
+
+            prop.load(input);
+
+            dbUrl = prop.getProperty("db.url");
+            dbUser = prop.getProperty("db.user");
+            dbPassword = prop.getProperty("db.password");
+
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
 
     public static String generarSaltHexadecimal() {
         SecureRandom random = new SecureRandom();
@@ -56,10 +83,7 @@ public class a6 {
 
     public static Connection obtenirConnexioBaseDeDades() {
         try {
-            String url = "jdbc:mysql://localhost:3306/uf1cripto";
-            String usuari = "root";
-            String contrasenya = "Admin123";
-            Connection connexio = DriverManager.getConnection(url, usuari, contrasenya);
+            Connection connexio = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
             return connexio;
         } catch (SQLException ex) {
             ex.printStackTrace();

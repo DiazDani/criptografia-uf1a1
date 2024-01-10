@@ -1,5 +1,8 @@
 package activitats;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
@@ -10,18 +13,36 @@ import java.sql.SQLException;
 
 public class a7 {
 
-    private static String contraseñaDB = "Admin123";
+    private static String contraseñaDB;
+    private static String url;
+    private static String usuarioDB;
+
+    static {
+        try (InputStream input = a7.class.getClassLoader().getResourceAsStream("config.properties")) {
+            Properties prop = new Properties();
+
+            if (input == null) {
+                System.out.println("Lo siento, no se encuentra el archivo de configuración.");
+                System.exit(1);
+            }
+
+            prop.load(input);
+
+            url = prop.getProperty("db.url");
+            usuarioDB = prop.getProperty("db.user");
+            contraseñaDB = prop.getProperty("db.password");
+
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
     public static boolean verificarContrasenya(String usuario, String contrasenya) {
         Connection conexion = null;
         PreparedStatement statement = null;
         ResultSet resultSet = null;
 
         try {
-
-            String url = "jdbc:mysql://localhost:3306/uf1cripto";
-            String usuarioDB = "root";
-
-
             conexion = DriverManager.getConnection(url, usuarioDB, contraseñaDB);
 
             String consulta = "SELECT contrasenya_hash, salt FROM usuaris WHERE nom = ?";
@@ -35,7 +56,6 @@ public class a7 {
 
                 String hashEntrante = calcularHashContraseña(contrasenya, salt);
 
-                // Compara los hashes
                 return hashAlmacenado.equals(hashEntrante);
             }
         } catch (SQLException | NoSuchAlgorithmException ex) {
@@ -76,4 +96,3 @@ public class a7 {
         }
     }
 }
-
