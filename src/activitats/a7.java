@@ -10,6 +10,7 @@ import java.sql.SQLException;
 
 public class a7 {
 
+    private static String contraseñaDB = "Admin123";
     public static boolean verificarContrasenya(String usuario, String contrasenya) {
         Connection conexion = null;
         PreparedStatement statement = null;
@@ -19,7 +20,7 @@ public class a7 {
 
             String url = "jdbc:mysql://localhost:3306/uf1cripto";
             String usuarioDB = "root";
-            String contraseñaDB = "Admin123";
+
 
             conexion = DriverManager.getConnection(url, usuarioDB, contraseñaDB);
 
